@@ -9,8 +9,8 @@ The aim of this project is to demonstrate three core robotics ideas:
 3. PID control: move simulated robot joints smoothly toward target angles.
 
 The project uses a 3D 3-DOF arm in MuJoCo. Tkinter is used for input and for
-displaying the math results. Numeric inputs are controlled with sliders so the
-demo is easier to present and avoids invalid typed values.
+displaying the math results. Every slider also has a numeric input box, so the
+demo supports both quick dragging and exact typed values.
 
 ## 2. Robot Model
 
@@ -87,7 +87,7 @@ Finally compute height:
 z = base_height + L1*sin(q2) + (L2 + L3)*sin(q2 + q3)
 ```
 
-This is implemented in `forward_kinematics()` in `robot_math.py`.
+This is implemented in `forward_kinematics()` in `kinematics/forward.py`.
 
 ## 4. Jacobian
 
@@ -122,7 +122,7 @@ dz/dq2 = L1*cos(q2) + (L2 + L3)*cos(q2 + q3)
 dz/dq3 =              (L2 + L3)*cos(q2 + q3)
 ```
 
-This is implemented in `jacobian()` in `robot_math.py`.
+This is implemented in `jacobian()` in `kinematics/forward.py`.
 
 ## 5. Inverse Kinematics
 
@@ -167,7 +167,7 @@ I       = identity matrix
 Damping is useful because robot arms can enter singular positions where a
 normal inverse becomes unstable.
 
-This is implemented in `inverse_kinematics()` in `robot_math.py`.
+This is implemented in `inverse_kinematics()` in `kinematics/inverse.py`.
 
 ## 6. PID Control
 
@@ -200,7 +200,7 @@ derivative(error) ~= -joint_velocity
 The controller also limits torque and clamps the integral value. This prevents
 the controller from producing unrealistic forces.
 
-This is implemented in `PIDController` in `controller.py`.
+This is implemented in `PIDController` in `control/pid.py`.
 
 The UI has a `Use PID Motion` toggle:
 
@@ -223,9 +223,9 @@ MuJoCo simulates the robot dynamics:
 - Gravity is disabled so the project focuses on the kinematics and controller.
 - A red target marker shows the IK target position.
 
-The model is created in `mujoco_model.py`. The `RobotSimulation` class in
-`simulation.py` owns the MuJoCo model, data, viewer, and the small stepping
-loop used by Tkinter.
+The model is created in `simulation/mujoco_sim.py`. The `RobotSimulation`
+class in the same file owns the MuJoCo model, data, viewer, and the small
+stepping loop used by Tkinter.
 
 ## 8. Testing
 

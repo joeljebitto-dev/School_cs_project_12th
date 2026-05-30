@@ -1,14 +1,14 @@
 import numpy as np
 import pytest
 
-from robot_math import forward_kinematics
-from mujoco_model import load_model
+from kinematics.forward import forward_kinematics
+from simulation.mujoco_sim import load_mujoco_model
 
 
 def test_mujoco_model_loads_and_steps():
     mujoco = pytest.importorskip("mujoco")
 
-    model = load_model()
+    model = load_mujoco_model()
     data = mujoco.MjData(model)
 
     assert model.nq == 3
@@ -24,7 +24,7 @@ def test_mujoco_model_loads_and_steps():
 def test_mujoco_end_effector_matches_forward_kinematics():
     mujoco = pytest.importorskip("mujoco")
 
-    model = load_model()
+    model = load_mujoco_model()
     data = mujoco.MjData(model)
     joint_angles = np.array([0.35, 0.45, -0.60])
 

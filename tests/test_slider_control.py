@@ -1,4 +1,4 @@
-from app import SliderControl
+from ui.widgets import SliderControl
 
 
 class FakeVariable:

@@ -1,12 +1,11 @@
 import numpy as np
 
-from constants import BASE_HEIGHT, DEFAULT_TARGET_POSITION, LINK_LENGTHS
-from robot_math import (
-    forward_kinematics,
+from config import BASE_HEIGHT, DEFAULT_TARGET_POSITION, LINK_LENGTHS
+from kinematics.common import position_error
+from kinematics.forward import forward_kinematics, jacobian
+from kinematics.inverse import (
     inverse_kinematics,
     is_safe_joint_position,
-    jacobian,
-    position_error,
     safe_joint_message,
 )
 

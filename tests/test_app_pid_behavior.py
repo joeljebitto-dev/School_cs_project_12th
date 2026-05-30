@@ -1,8 +1,8 @@
 import numpy as np
 
-from app import KinematicsPidApp
-from constants import DEFAULT_PID_TARGET_DEGREES
-from controller import PIDController
+from config import DEFAULT_PID_TARGET_DEGREES
+from control.pid import PIDController
+from ui.app import KinematicsPidApp
 
 
 class FakeVariable:

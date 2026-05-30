@@ -1,13 +1,13 @@
 import numpy as np
 import pytest
 
-from controller import PIDController
+from control.pid import PIDController
 
 
 def test_robot_simulation_sets_pose_and_steps_pid():
     pytest.importorskip("mujoco")
 
-    from simulation import RobotSimulation
+    from simulation.mujoco_sim import RobotSimulation
 
     simulation = RobotSimulation()
     target_angles = np.array([0.15, 0.20, -0.25])

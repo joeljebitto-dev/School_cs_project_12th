@@ -1,29 +1,15 @@
-"""Shared constants for the 3-DOF robot demo.
-
-Keeping these values in one file makes it easy to change the robot size,
-solver behavior, or controller limits without hunting through the project.
-"""
+"""Configuration values for the 3-DOF robot demo."""
 
 from __future__ import annotations
 
 import numpy as np
 
 
-# Link lengths are in meters.
-#
-# L1 is the upper arm.
-# L2 is the forearm.
-# L3 is a small tool/end-effector extension.
+# Robot dimensions are in meters.
 LINK_LENGTHS = np.array([0.45, 0.35, 0.25], dtype=float)
-
-# The shoulder joint is raised above the floor by this amount.
 BASE_HEIGHT = 0.18
 
 # Natural classroom-demo joint limits, in degrees.
-#
-# q1: yaw
-# q2: shoulder pitch, restricted to avoid shoulder-down poses
-# q3: elbow pitch, restricted to the elevated-elbow branch
 JOINT_LIMITS_DEGREES = np.array(
     [
         [-180.0, 180.0],
@@ -33,8 +19,6 @@ JOINT_LIMITS_DEGREES = np.array(
     dtype=float,
 )
 JOINT_LIMITS_RADIANS = np.radians(JOINT_LIMITS_DEGREES)
-
-# Moving robot points must stay above the floor by this margin.
 MIN_SAFE_Z = 0.02
 
 # Inverse kinematics settings.
@@ -51,14 +35,31 @@ UI_UPDATE_INTERVAL_MS = 20
 TORQUE_LIMIT = 8.0
 INTEGRAL_LIMIT = 3.0
 PID_PLOT_MAX_POINTS = 350
+DEFAULT_PID_GAINS = (35.0, 0.0, 3.0)
 
-# Default Cartesian target shown by the red MuJoCo marker.
+# Default values shown in the UI.
 DEFAULT_TARGET_POSITION = np.array([0.65, 0.20, 0.35], dtype=float)
-
-# Default joint target used on the PID tab, in degrees for easy reading.
 DEFAULT_PID_TARGET_DEGREES = np.array([25.0, 35.0, -45.0], dtype=float)
-
-# Slider ranges for the Cartesian target controls.
 MAX_REACH = float(np.sum(LINK_LENGTHS))
 IK_TARGET_XY_LIMIT = MAX_REACH
 IK_TARGET_Z_MAX = BASE_HEIGHT + MAX_REACH
+
+# UI constants.
+WINDOW_WIDTH_FRACTION = 0.90
+WINDOW_HEIGHT_FRACTION = 0.90
+MIN_WINDOW_WIDTH = 1024
+MIN_WINDOW_HEIGHT = 700
+
+UI_COLORS = {
+    "bg": "#111827",
+    "panel": "#182235",
+    "panel_alt": "#202c42",
+    "border": "#334155",
+    "text": "#e5e7eb",
+    "muted": "#94a3b8",
+    "accent": "#38bdf8",
+    "accent_dark": "#0f766e",
+    "entry_bg": "#0f172a",
+    "equation_bg": "#111827",
+    "result_bg": "#0b1220",
+}

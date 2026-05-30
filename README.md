@@ -52,17 +52,21 @@ python3 -m venv .venv
 ## Project Structure
 
 ```text
-main.py             starts the app
-setup.sh            creates .venv and installs dependencies
-run.sh              starts the app from .venv
-app.py              polished Tkinter interface and button callbacks
-simulation.py       MuJoCo model/data, viewer, reset, and stepping logic
-robot_math.py       3D forward kinematics, Jacobian, and inverse kinematics
-controller.py       joint-space PID controller
-mujoco_model.py     MuJoCo XML model for the yaw-pitch-pitch arm
-constants.py        link lengths, base height, solver constants, and limits
-tests/              tests for the math, controller, and MuJoCo model
-REPORT.md           project explanation and math derivation
+main.py                    starts the app
+setup.sh                   creates .venv and installs dependencies
+run.sh                     starts the app from .venv
+config.py                  link lengths, limits, PID defaults, and UI constants
+ui/app.py                  main Tkinter coordinator and callbacks
+ui/widgets.py              reusable dark UI widgets and equation panels
+ui/forward_tab.py          Forward Kinematics tab layout
+ui/inverse_tab.py          Inverse Kinematics tab layout
+ui/pid_tab.py              PID Control tab layout and live plot
+kinematics/forward.py      forward kinematics, robot points, and Jacobian
+kinematics/inverse.py      inverse kinematics and safety checks
+control/pid.py             joint-space PID controller and plot history
+simulation/mujoco_sim.py   MuJoCo XML model, viewer, reset, and stepping logic
+tests/                     tests for math, controller, UI helpers, and MuJoCo
+REPORT.md                  project explanation and math derivation
 ```
 
 ## How To Use The App
@@ -74,10 +78,12 @@ REPORT.md           project explanation and math derivation
 5. In `Inverse Kinematics`, target sliders only move the red marker; click `Solve IK`, then `Apply Solution`.
 6. Use the `PID Control` tab as a live controller with target inputs, gain inputs, live values, and the response plot.
 
-The FK and IK tabs show the equations and numerical results. The PID tab shows
-current/target/error values, plus joint error norm and torque norm over time.
-In direct mode, the FK apply button is hidden because FK sliders and input
-boxes already move the robot live.
+The app uses a dark `ttk` interface with scrollable tabs so the controls stay
+usable on smaller screens. The FK and IK tabs show equations rendered with
+Matplotlib mathtext inside Tkinter. The PID tab shows current/target/error
+values, plus joint error norm and torque norm over time. In direct mode, the FK
+apply button is hidden because FK sliders and input boxes already move the
+robot live.
 
 All user inputs have sliders and matching numeric input boxes. Invalid typed
 values are restored, and out-of-range values are clamped safely.
@@ -143,20 +149,24 @@ pose directly.
 
 ## How To Read The Code
 
-Start with `robot_math.py`. It has no GUI or MuJoCo code, only the equations:
+Start with `kinematics/forward.py`. It has no GUI or MuJoCo code, only the
+forward equations:
 
 - `forward_kinematics()` computes `[x, y, z]` from joint angles.
 - `jacobian()` computes how small joint changes affect position.
+
+Then read `kinematics/inverse.py`:
+
 - `inverse_kinematics()` repeatedly uses the Jacobian to move toward a target.
 
-Then read `controller.py`. It has one class, `PIDController`, which converts
-joint angle error into motor torque.
+Then read `control/pid.py`. It has `PIDController`, which converts joint angle
+error into motor torque, and `PIDHistory`, which stores plot samples.
 
-Then read `simulation.py`. It owns the MuJoCo model, data, viewer, and the
-small `after()`-driven simulation steps.
+Then read `simulation/mujoco_sim.py`. It owns the MuJoCo model, data, viewer,
+and the small `after()`-driven simulation steps.
 
-Finally read `app.py`. It connects Tkinter inputs, displayed equations,
-simulation actions, and status messages.
+Finally read `ui/app.py` and the three files in `ui/*_tab.py`. They connect
+Tkinter inputs, displayed equations, simulation actions, and status messages.
 
 ## Notes
 

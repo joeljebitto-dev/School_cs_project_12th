@@ -1,9 +1,4 @@
-"""Small MuJoCo simulation wrapper for the robot demo.
-
-This file keeps the physics details out of the Tkinter code. The UI can ask
-for simple actions like "open the viewer", "set joint angles", or "step PID",
-while this class handles ``mjData``, ``mj_step()``, and viewer locking.
-"""
+"""MuJoCo model and simulation wrapper for the 3-DOF robot demo."""
 
 from __future__ import annotations
 
@@ -14,13 +9,17 @@ import mujoco
 import mujoco.viewer
 import numpy as np
 
-from constants import (
+from config import (
+    BASE_HEIGHT,
+    DEFAULT_TARGET_POSITION,
+    JOINT_LIMITS_RADIANS,
+    LINK_LENGTHS,
     SIMULATION_STEPS_PER_FRAME,
     SIMULATION_TIMESTEP,
+    TORQUE_LIMIT,
 )
-from controller import PIDController
-from mujoco_model import load_mujoco_model
-from robot_math import wrap_angles
+from control.pid import PIDController
+from kinematics.common import wrap_angles
 
 
 @dataclass
@@ -32,6 +31,85 @@ class PidStepSample:
     torque_norm: float
 
 
+def create_mjcf() -> str:
+    """Return the MJCF XML model as a string."""
+
+    l1, l2, l3 = LINK_LENGTHS
+    target_x, target_y, target_z = DEFAULT_TARGET_POSITION
+    q1_min, q1_max = JOINT_LIMITS_RADIANS[0]
+    q2_min, q2_max = JOINT_LIMITS_RADIANS[1]
+    q3_min, q3_max = JOINT_LIMITS_RADIANS[2]
+
+    return f"""
+<mujoco model="three_dof_xyz_arm">
+  <compiler angle="radian" coordinate="local"/>
+  <option timestep="{SIMULATION_TIMESTEP}" gravity="0 0 0"/>
+
+  <default>
+    <joint type="hinge" limited="true" damping="0.10" armature="0.015"/>
+    <geom friction="0.7 0.1 0.1"/>
+  </default>
+
+  <worldbody>
+    <light name="top_light" pos="0 -0.4 2.2" dir="0 0 -1"/>
+    <geom name="floor" type="plane" size="1.4 1.4 0.02"
+          rgba="0.92 0.92 0.88 1"/>
+
+    <body name="target" mocap="true" pos="{target_x} {target_y} {target_z}">
+      <geom name="target_marker" type="sphere" size="0.035"
+            contype="0" conaffinity="0" rgba="0.95 0.20 0.20 0.70"/>
+    </body>
+
+    <body name="base_yaw" pos="0 0 0">
+      <joint name="joint1" axis="0 0 1" range="{q1_min} {q1_max}"/>
+      <geom name="base_column" type="capsule" fromto="0 0 0 0 0 {BASE_HEIGHT}"
+            size="0.045" rgba="0.16 0.17 0.19 1"/>
+      <geom name="base_plate" type="cylinder" pos="0 0 0.015"
+            size="0.09 0.015" rgba="0.12 0.13 0.15 1"/>
+
+      <body name="shoulder_pitch" pos="0 0 {BASE_HEIGHT}">
+        <joint name="joint2" axis="0 -1 0" range="{q2_min} {q2_max}"/>
+        <geom name="shoulder_joint" type="sphere" size="0.055"
+              rgba="0.12 0.13 0.15 1"/>
+        <geom name="upper_arm" type="capsule" fromto="0 0 0 {l1} 0 0"
+              size="0.030" rgba="0.20 0.42 0.85 1"/>
+
+        <body name="elbow_pitch" pos="{l1} 0 0">
+          <joint name="joint3" axis="0 -1 0" range="{q3_min} {q3_max}"/>
+          <geom name="elbow_joint" type="sphere" size="0.046"
+                rgba="0.12 0.13 0.15 1"/>
+          <geom name="forearm" type="capsule" fromto="0 0 0 {l2} 0 0"
+                size="0.026" rgba="0.20 0.62 0.42 1"/>
+
+          <body name="tool" pos="{l2} 0 0">
+            <geom name="tool_link" type="capsule" fromto="0 0 0 {l3} 0 0"
+                  size="0.020" rgba="0.92 0.58 0.18 1"/>
+            <site name="end_effector" pos="{l3} 0 0" type="sphere"
+                  size="0.032" rgba="0.08 0.08 0.08 1"/>
+          </body>
+        </body>
+      </body>
+    </body>
+  </worldbody>
+
+  <actuator>
+    <motor name="motor1" joint="joint1" gear="1"
+           ctrllimited="true" ctrlrange="-{TORQUE_LIMIT} {TORQUE_LIMIT}"/>
+    <motor name="motor2" joint="joint2" gear="1"
+           ctrllimited="true" ctrlrange="-{TORQUE_LIMIT} {TORQUE_LIMIT}"/>
+    <motor name="motor3" joint="joint3" gear="1"
+           ctrllimited="true" ctrlrange="-{TORQUE_LIMIT} {TORQUE_LIMIT}"/>
+  </actuator>
+</mujoco>
+""".strip()
+
+
+def load_mujoco_model():
+    """Create and return a MuJoCo model."""
+
+    return mujoco.MjModel.from_xml_string(create_mjcf())
+
+
 class RobotSimulation:
     """Own the MuJoCo model, data, viewer, and simulation stepping."""
 
@@ -41,11 +119,7 @@ class RobotSimulation:
         self.viewer = None
 
     def open_viewer(self) -> bool:
-        """Open the passive MuJoCo viewer.
-
-        Returns ``False`` when the viewer is already open, so the UI can show a
-        friendly message instead of launching a duplicate window.
-        """
+        """Open the passive MuJoCo viewer, returning False if already open."""
 
         if self.viewer_is_open():
             return False
@@ -66,11 +140,7 @@ class RobotSimulation:
         return self.viewer is not None and self.viewer.is_running()
 
     def set_joint_angles(self, joint_angles: np.ndarray) -> None:
-        """Place the robot at a joint pose without running PID.
-
-        ``mj_forward()`` updates all MuJoCo-derived positions, including the
-        end-effector site, after qpos changes directly.
-        """
+        """Place the robot at a joint pose without running PID."""
 
         with self._viewer_lock():
             self.data.qpos[:3] = wrap_angles(joint_angles)
@@ -113,12 +183,7 @@ class RobotSimulation:
         controller: PIDController,
         target_angles: np.ndarray,
     ) -> PidStepSample:
-        """Advance MuJoCo a few small steps using PID torque commands.
-
-        Tkinter calls this method through ``after()``, so the UI remains
-        responsive. The inner loop keeps the physics timestep small without
-        requiring a background thread.
-        """
+        """Advance MuJoCo a few small steps using PID torque commands."""
 
         with self._viewer_lock():
             for _ in range(SIMULATION_STEPS_PER_FRAME):

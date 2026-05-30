@@ -1,7 +1,7 @@
 from matplotlib.backends.backend_agg import FigureCanvasAgg
 from matplotlib.figure import Figure
 
-from app import create_equation_figure
+from ui.widgets import create_equation_figure
 
 
 def test_create_equation_figure_renders_mathtext_strings():

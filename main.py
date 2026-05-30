@@ -9,7 +9,8 @@ def main() -> int:
     """Start the Tkinter application."""
 
     try:
-        from app import KinematicsPidApp
+        import tkinter as tk
+        from ui.app import KinematicsPidApp
     except ImportError as error:
         print("Could not start the app because a dependency is missing.")
         print(f"Missing detail: {error}")
@@ -20,7 +21,8 @@ def main() -> int:
         return 1
 
     try:
-        app = KinematicsPidApp()
+        root = tk.Tk()
+        app = KinematicsPidApp(root)
     except Exception as error:
         print("Could not create the app window.")
         print(f"Startup detail: {error}")
