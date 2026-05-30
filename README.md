@@ -23,29 +23,38 @@ On Ubuntu, install Tkinter first:
 sudo apt install python3-tk
 ```
 
-Create a virtual environment if you want one, then install the Python
-dependencies:
+Set up the project:
 
 ```bash
-python -m pip install -r requirements.txt
+./setup.sh
 ```
 
 Run the project:
 
 ```bash
-python main.py
+./run.sh
 ```
 
 Run tests:
 
 ```bash
-pytest
+.venv/bin/python -m pytest
+```
+
+Manual fallback:
+
+```bash
+python3 -m venv .venv
+.venv/bin/python -m pip install -r requirements.txt
+.venv/bin/python main.py
 ```
 
 ## Project Structure
 
 ```text
 main.py             starts the app
+setup.sh            creates .venv and installs dependencies
+run.sh              starts the app from .venv
 app.py              polished Tkinter interface and button callbacks
 simulation.py       MuJoCo model/data, viewer, reset, and stepping logic
 robot_math.py       3D forward kinematics, Jacobian, and inverse kinematics
