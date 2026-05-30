@@ -145,7 +145,9 @@ torque = Kp*error + Ki*integral(error) + Kd*derivative(error)
 
 When `Use PID Motion` is enabled, FK and IK apply actions start PID motion
 toward the target. When it is disabled, FK and IK apply actions set the robot
-pose directly.
+pose directly. MuJoCo gravity is enabled during PID stepping so the controller
+has to hold the arm against weight, then disabled again for direct FK/IK
+positioning.
 
 ## How To Read The Code
 
@@ -171,7 +173,7 @@ Tkinter inputs, displayed equations, simulation actions, and status messages.
 ## Notes
 
 - MuJoCo opens in a separate viewer window.
-- Gravity is disabled so the project focuses on kinematics and control.
+- Gravity is disabled for direct kinematics and enabled during PID motion.
 - If the viewer does not open, check your display/OpenGL setup.
 - If the app says Tkinter is missing, install `python3-tk`.
 

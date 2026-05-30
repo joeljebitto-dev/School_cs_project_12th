@@ -14,6 +14,8 @@ from config import (
     DEFAULT_TARGET_POSITION,
     JOINT_LIMITS_RADIANS,
     LINK_LENGTHS,
+    NO_GRAVITY,
+    PID_GRAVITY,
     SIMULATION_STEPS_PER_FRAME,
     SIMULATION_TIMESTEP,
     TORQUE_LIMIT,
@@ -143,6 +145,7 @@ class RobotSimulation:
         """Place the robot at a joint pose without running PID."""
 
         with self._viewer_lock():
+            self.set_gravity_enabled(False)
             self.data.qpos[:3] = wrap_angles(joint_angles)
             self.data.qvel[:3] = 0.0
             self.data.ctrl[:3] = 0.0
@@ -172,11 +175,22 @@ class RobotSimulation:
 
         return self.data.ctrl[:3].copy()
 
+    def gravity_is_enabled(self) -> bool:
+        """Return True when earth gravity is active in the MuJoCo model."""
+
+        return bool(np.allclose(self.model.opt.gravity, PID_GRAVITY))
+
+    def set_gravity_enabled(self, enabled: bool) -> None:
+        """Turn earth gravity on for PID motion or off for direct kinematics."""
+
+        self.model.opt.gravity[:] = PID_GRAVITY if enabled else NO_GRAVITY
+
     def stop_motors(self) -> None:
         """Set all motor commands to zero."""
 
         with self._viewer_lock():
             self.data.ctrl[:3] = 0.0
+            self.set_gravity_enabled(False)
 
     def step_pid_control(
         self,
@@ -186,6 +200,7 @@ class RobotSimulation:
         """Advance MuJoCo a few small steps using PID torque commands."""
 
         with self._viewer_lock():
+            self.set_gravity_enabled(True)
             for _ in range(SIMULATION_STEPS_PER_FRAME):
                 torque = controller.compute(
                     target_angles,

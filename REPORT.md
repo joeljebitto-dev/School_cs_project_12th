@@ -211,6 +211,10 @@ PID tab: target inputs move the robot with PID and gains update live.
 IK:      target sliders/boxes move the marker; Apply is always required.
 ```
 
+During PID stepping, MuJoCo gravity is enabled so the controller must hold the
+arm against weight. When PID is paused or the robot is placed directly with FK
+or IK, gravity is disabled again to keep the kinematics demonstration clean.
+
 ## 7. MuJoCo Simulation
 
 MuJoCo simulates the robot dynamics:
@@ -220,7 +224,7 @@ MuJoCo simulates the robot dynamics:
 - The `-y` pitch axis makes positive pitch raise the arm in `+z`.
 - Each joint has one motor actuator.
 - Joint limits match the safe/natural demo limits.
-- Gravity is disabled so the project focuses on the kinematics and controller.
+- Gravity is disabled for direct kinematics and enabled during PID motion.
 - A red target marker shows the IK target position.
 
 The model is created in `simulation/mujoco_sim.py`. The `RobotSimulation`

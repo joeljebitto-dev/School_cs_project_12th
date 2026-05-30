@@ -630,9 +630,11 @@ class KinematicsPidApp:
         torques = self.simulation.current_motor_torques()
         end_effector_position = forward_kinematics(current_angles)
         state = "running" if self.pid_running else "paused"
+        gravity_state = "on" if self.simulation.gravity_is_enabled() else "off"
 
         output = [
             f"State: {state}",
+            f"Gravity: {gravity_state}",
             f"Current q (deg): {self._format_vector(np.degrees(current_angles))}",
             f"Target q  (deg): {self._format_vector(np.degrees(target_angles))}",
             f"Error q   (deg): {self._format_vector(np.degrees(error_angles))}",
