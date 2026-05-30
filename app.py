@@ -35,6 +35,49 @@ from robot_math import (
 from simulation import PidStepSample, RobotSimulation
 
 
+EQUATION_BACKGROUND = "#fbfcfe"
+EQUATION_FOREGROUND = "#111827"
+
+
+def create_equation_figure(
+    equations: list[str],
+    height_inches: float,
+    width_inches: float = 3.8,
+) -> Figure:
+    """Create a Matplotlib figure that renders mathtext equations."""
+
+    figure = Figure(
+        figsize=(width_inches, height_inches),
+        dpi=100,
+        facecolor=EQUATION_BACKGROUND,
+    )
+    axis = figure.add_subplot(111)
+    axis.set_axis_off()
+    axis.set_facecolor(EQUATION_BACKGROUND)
+    axis.set_xlim(0.0, 1.0)
+    axis.set_ylim(0.0, 1.0)
+    figure.subplots_adjust(left=0.02, right=0.98, top=0.96, bottom=0.04)
+
+    if len(equations) == 1:
+        y_positions = [0.5]
+    else:
+        y_positions = np.linspace(0.86, 0.14, len(equations))
+
+    for equation, y_position in zip(equations, y_positions, strict=True):
+        axis.text(
+            0.02,
+            float(y_position),
+            equation,
+            color=EQUATION_FOREGROUND,
+            fontsize=13,
+            ha="left",
+            va="center",
+            transform=axis.transAxes,
+        )
+
+    return figure
+
+
 @dataclass
 class SliderControl:
     """A slider plus a typed numeric input box."""
@@ -116,6 +159,7 @@ class KinematicsPidApp:
         self.time_history: list[float] = []
         self.error_history: list[float] = []
         self.torque_history: list[float] = []
+        self.equation_canvases: list[FigureCanvasTkAgg] = []
         self.plot_time = 0.0
         self._updating_sliders = False
         self.pid_motion_enabled_var = tk.BooleanVar(value=False)
@@ -160,13 +204,6 @@ class KinematicsPidApp:
         style.configure("Title.TLabel", font=("TkDefaultFont", 15, "bold"))
         style.configure("Subtitle.TLabel", foreground="#536273")
         style.configure("Status.TLabel", padding=(12, 6), foreground="#334155")
-        style.configure(
-            "Equation.TLabel",
-            background="#fbfcfe",
-            foreground="#111827",
-            font=("Cambria Math", 13),
-            padding=(10, 8),
-        )
         style.configure(
             "EquationNote.TLabel",
             background="#eef1f4",
@@ -300,15 +337,16 @@ class KinematicsPidApp:
 
         math_panel = self._make_panel(self.fk_tab, "Core Math")
         math_panel.grid(row=1, column=0, sticky=tk.NSEW, padx=(0, 12))
-        self._add_equation_box(
+        self._add_latex_equation_box(
             math_panel,
-            text=(
-                "r = L₁ cos(q₂) + (L₂ + L₃) cos(q₂ + q₃)\n"
-                "x = r cos(q₁)\n"
-                "y = r sin(q₁)\n"
-                "z = h + L₁ sin(q₂) + (L₂ + L₃) sin(q₂ + q₃)"
-            ),
+            equations=[
+                r"$r = L_1\cos(q_2) + (L_2 + L_3)\cos(q_2 + q_3)$",
+                r"$x = r\cos(q_1)$",
+                r"$y = r\sin(q_1)$",
+                r"$z = h + L_1\sin(q_2) + (L_2 + L_3)\sin(q_2 + q_3)$",
+            ],
             note="q₁ turns the arm around the base. q₂ and q₃ set reach and height.",
+            height_inches=1.45,
         )
 
         result_panel = self._make_panel(self.fk_tab, "Computed Position")
@@ -372,14 +410,15 @@ class KinematicsPidApp:
 
         math_panel = self._make_panel(self.ik_tab, "Solver Math")
         math_panel.grid(row=1, column=0, sticky=tk.NSEW, padx=(0, 12))
-        self._add_equation_box(
+        self._add_latex_equation_box(
             math_panel,
-            text=(
-                "Δp = target − current\n"
-                "Δp ≈ J(q) Δq\n"
-                "Δq = α Jᵀ (J Jᵀ + λ²I)⁻¹ Δp"
-            ),
+            equations=[
+                r"$\Delta p = p_{\mathrm{target}} - p_{\mathrm{current}}$",
+                r"$\Delta p \approx J(q)\Delta q$",
+                r"$\Delta q = \alpha J^T (J J^T + \lambda^2 I)^{-1}\Delta p$",
+            ],
             note="Damping λ keeps the solver stable near difficult arm positions.",
+            height_inches=1.25,
         )
 
         result_panel = self._make_panel(self.ik_tab, "IK Result")
@@ -549,18 +588,21 @@ class KinematicsPidApp:
         output.configure(state=tk.DISABLED)
         return output
 
-    def _add_equation_box(self, parent: tk.Widget, text: str, note: str) -> None:
-        """Show an important equation in a readable presentation style."""
+    def _add_latex_equation_box(
+        self,
+        parent: tk.Widget,
+        equations: list[str],
+        note: str,
+        height_inches: float,
+    ) -> None:
+        """Show equations with Matplotlib mathtext inside Tkinter."""
 
-        ttk.Label(
-            parent,
-            text=text,
-            style="Equation.TLabel",
-            justify=tk.LEFT,
-            anchor=tk.W,
-            relief=tk.SOLID,
-            borderwidth=1,
-        ).pack(fill=tk.X, anchor=tk.W)
+        figure = create_equation_figure(equations, height_inches)
+        canvas = FigureCanvasTkAgg(figure, master=parent)
+        canvas.draw()
+        canvas.get_tk_widget().pack(fill=tk.X, anchor=tk.W)
+        self.equation_canvases.append(canvas)
+
         ttk.Label(
             parent,
             text=note,
