@@ -44,7 +44,9 @@ class KinematicsPidApp:
         self._configure_style()
 
         self.simulation = RobotSimulation()
-        default_kp, default_ki, default_kd = DEFAULT_PID_GAINS
+        default_kp = np.array([DEFAULT_PID_GAINS[f"joint{i+1}"][0] for i in range(3)])
+        default_ki = np.array([DEFAULT_PID_GAINS[f"joint{i+1}"][1] for i in range(3)])
+        default_kd = np.array([DEFAULT_PID_GAINS[f"joint{i+1}"][2] for i in range(3)])
         self.pid_controller = PIDController(kp=default_kp, ki=default_ki, kd=default_kd)
         self.pid_history = PIDHistory(max_points=PID_PLOT_MAX_POINTS)
         self.pid_running = False
@@ -298,9 +300,7 @@ class KinematicsPidApp:
             on_reset=self.reset_simulation,
         )
         self.pid_q_controls = pid_tab.q_controls
-        self.pid_kp_control = pid_tab.kp_control
-        self.pid_ki_control = pid_tab.ki_control
-        self.pid_kd_control = pid_tab.kd_control
+        self.pid_joint_gains = pid_tab.joint_gains
         self.pid_axis = pid_tab.axis
         self.error_line = pid_tab.error_line
         self.torque_line = pid_tab.torque_line
@@ -478,10 +478,10 @@ class KinematicsPidApp:
             self.status_var.set("PID gains updated.")
 
     def _update_pid_gains(self) -> None:
-        kp, ki, kd = self._read_pid_gains()
-        self.pid_controller.kp = kp
-        self.pid_controller.ki = ki
-        self.pid_controller.kd = kd
+        kp_arr, ki_arr, kd_arr = self._read_pid_gains()
+        self.pid_controller.kp = kp_arr
+        self.pid_controller.ki = ki_arr
+        self.pid_controller.kd = kd_arr
 
     def start_pid_motion(
         self,
@@ -571,16 +571,24 @@ class KinematicsPidApp:
         self._update_pid_plot()
 
     def _update_pid_plot(self) -> None:
-        self.error_line.set_data(
-            self.pid_history.time_history,
-            self.pid_history.error_history,
-        )
-        self.torque_line.set_data(
-            self.pid_history.time_history,
-            self.pid_history.torque_history,
-        )
-        self.pid_axis.relim()
-        self.pid_axis.autoscale_view()
+        times = self.pid_history.time_history
+        errors = self.pid_history.error_history
+        torques = self.pid_history.torque_history
+
+        self.error_line.set_data(times, errors)
+        self.torque_line.set_data(times, torques)
+
+        if times:
+            t_min, t_max = times[0], times[-1]
+            if t_max <= t_min:
+                t_max = t_min + 1.0
+            self.pid_axis.set_xlim(t_min, t_max)
+
+            all_values = errors + torques
+            y_max = max(all_values) if all_values else 1.0
+            y_max = max(y_max, 0.1)  # ensure a visible range
+            self.pid_axis.set_ylim(0.0, y_max * 1.1)
+
         self.pid_canvas.draw_idle()
 
     def _reset_pid_plot(self) -> None:
@@ -689,12 +697,11 @@ class KinematicsPidApp:
     def _read_pid_target_angles(self) -> np.ndarray:
         return np.radians(self._read_slider_values(self.pid_q_controls))
 
-    def _read_pid_gains(self) -> tuple[float, float, float]:
-        return (
-            self.pid_kp_control.get(),
-            self.pid_ki_control.get(),
-            self.pid_kd_control.get(),
-        )
+    def _read_pid_gains(self) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+        kp = np.array([jg.kp.get() for jg in self.pid_joint_gains])
+        ki = np.array([jg.ki.get() for jg in self.pid_joint_gains])
+        kd = np.array([jg.kd.get() for jg in self.pid_joint_gains])
+        return kp, ki, kd
 
     def _accept_fk_slider_angles(self, joint_angles: np.ndarray) -> bool:
         safety_message = safe_joint_message(joint_angles)

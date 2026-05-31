@@ -2,6 +2,7 @@ import numpy as np
 
 from config import DEFAULT_PID_TARGET_DEGREES
 from control.pid import PIDController
+from ui.pid_tab import JointGainControls
 from ui.app import KinematicsPidApp
 
 
@@ -56,9 +57,17 @@ def make_app_without_tk():
         FakeControl(DEFAULT_PID_TARGET_DEGREES[1]),
         FakeControl(DEFAULT_PID_TARGET_DEGREES[2]),
     ]
-    app.pid_kp_control = FakeControl(35.0)
-    app.pid_ki_control = FakeControl(0.0)
-    app.pid_kd_control = FakeControl(3.0)
+    app.pid_joint_gains = [
+        JointGainControls(
+            kp=FakeControl(35.0), ki=FakeControl(0.0), kd=FakeControl(3.0),
+        ),
+        JointGainControls(
+            kp=FakeControl(35.0), ki=FakeControl(0.0), kd=FakeControl(3.0),
+        ),
+        JointGainControls(
+            kp=FakeControl(35.0), ki=FakeControl(0.0), kd=FakeControl(3.0),
+        ),
+    ]
     app.fk_apply_row = FakeGridWidget()
     app._update_pid_live_values = lambda: None
     return app
@@ -98,15 +107,19 @@ def test_pid_target_change_starts_live_pid_motion():
 def test_pid_gain_change_updates_gains_without_changing_target():
     app = make_app_without_tk()
     original_target = app.pid_target_angles.copy()
-    app.pid_kp_control.set(12.0)
-    app.pid_ki_control.set(1.5)
-    app.pid_kd_control.set(4.0)
+    # Update gains for joint 1 only
+    app.pid_joint_gains[0].kp.set(12.0)
+    app.pid_joint_gains[0].ki.set(1.5)
+    app.pid_joint_gains[0].kd.set(4.0)
 
     app._on_pid_gain_changed()
 
-    assert app.pid_controller.kp == 12.0
-    assert app.pid_controller.ki == 1.5
-    assert app.pid_controller.kd == 4.0
+    assert app.pid_controller.kp[0] == 12.0
+    assert app.pid_controller.ki[0] == 1.5
+    assert app.pid_controller.kd[0] == 4.0
+    # Other joints should remain unchanged
+    assert app.pid_controller.kp[1] == 35.0
+    assert app.pid_controller.kp[2] == 35.0
     assert np.allclose(app.pid_target_angles, original_target)
 
 

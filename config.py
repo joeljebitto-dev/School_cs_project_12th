@@ -34,10 +34,14 @@ SIMULATION_STEPS_PER_FRAME = 3
 UI_UPDATE_INTERVAL_MS = 20
 NO_GRAVITY = np.array([0.0, 0.0, 0.0], dtype=float)
 PID_GRAVITY = np.array([0.0, 0.0, -9.81], dtype=float)
-TORQUE_LIMIT = 8.0
 INTEGRAL_LIMIT = 3.0
-PID_PLOT_MAX_POINTS = 350
-DEFAULT_PID_GAINS = (35.0, 0.0, 3.0)
+PID_PLOT_MAX_POINTS = 2000
+TORQUE_LIMIT = 16.0
+DEFAULT_PID_GAINS = {
+    "joint1": (300.0, 0.0, 4.0),     # yaw
+    "joint2": (320.0, 11.5, 4.7),    # shoulder (Ki fights gravity)
+    "joint3": (283.3, 0.0, 4.0),     # elbow
+}
 
 # Default values shown in the UI.
 DEFAULT_TARGET_POSITION = np.array([0.65, 0.20, 0.35], dtype=float)

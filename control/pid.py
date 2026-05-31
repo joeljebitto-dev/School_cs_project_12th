@@ -12,14 +12,20 @@ from kinematics.common import wrap_angles
 
 @dataclass
 class PIDController:
-    """Simple joint-space PID controller."""
+    """Simple joint-space PID controller with per-joint gains."""
 
-    kp: float
-    ki: float
-    kd: float
+    kp: np.ndarray  # shape (3,) — one value per joint
+    ki: np.ndarray  # shape (3,)
+    kd: np.ndarray  # shape (3,)
     torque_limit: float = TORQUE_LIMIT
     integral_limit: float = INTEGRAL_LIMIT
     integral_error: np.ndarray = field(default_factory=lambda: np.zeros(3))
+
+    def __post_init__(self) -> None:
+        """Ensure gains are numpy arrays."""
+        self.kp = np.asarray(self.kp, dtype=float)
+        self.ki = np.asarray(self.ki, dtype=float)
+        self.kd = np.asarray(self.kd, dtype=float)
 
     def reset(self) -> None:
         """Clear the stored integral error."""

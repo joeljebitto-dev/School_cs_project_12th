@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Callable
 
 import tkinter as tk
@@ -15,17 +15,31 @@ from ui.widgets import SliderControl, add_slider, make_card
 
 
 @dataclass
+class JointGainControls:
+    """PID gain sliders for a single joint."""
+
+    kp: SliderControl
+    ki: SliderControl
+    kd: SliderControl
+
+
+@dataclass
 class PidTab:
     """Widgets owned by the PID Control tab."""
 
     q_controls: list[SliderControl]
-    kp_control: SliderControl
-    ki_control: SliderControl
-    kd_control: SliderControl
+    joint_gains: list[JointGainControls]  # one per joint
     axis: object
     error_line: object
     torque_line: object
     canvas: FigureCanvasTkAgg
+
+
+_JOINT_LABELS = [
+    ("Joint 1 — Yaw", "joint1"),
+    ("Joint 2 — Shoulder", "joint2"),
+    ("Joint 3 — Elbow", "joint3"),
+]
 
 
 def build_pid_tab(
@@ -96,49 +110,54 @@ def build_pid_tab(
         ),
     ]
 
-    gains_panel = make_card(controls, "PID Gains")
-    gains_panel.pack(fill=tk.X, pady=(0, 12))
-    gains_panel.columnconfigure(0, weight=1)
-    default_kp, default_ki, default_kd = DEFAULT_PID_GAINS
-    kp_control = add_slider(
-        gains_panel,
-        "Kp",
-        0,
-        80,
-        default_kp,
-        0,
-        0,
-        "{:.1f}",
-        status_callback=status_callback,
-        command=on_gain_changed,
-        callbacks_suspended=callbacks_suspended,
-    )
-    ki_control = add_slider(
-        gains_panel,
-        "Ki",
-        0,
-        10,
-        default_ki,
-        1,
-        0,
-        "{:.2f}",
-        status_callback=status_callback,
-        command=on_gain_changed,
-        callbacks_suspended=callbacks_suspended,
-    )
-    kd_control = add_slider(
-        gains_panel,
-        "Kd",
-        0,
-        20,
-        default_kd,
-        2,
-        0,
-        "{:.1f}",
-        status_callback=status_callback,
-        command=on_gain_changed,
-        callbacks_suspended=callbacks_suspended,
-    )
+    # --- Per-joint PID gain sections ---
+    joint_gains: list[JointGainControls] = []
+    for idx, (label, key) in enumerate(_JOINT_LABELS):
+        default_kp, default_ki, default_kd = DEFAULT_PID_GAINS[key]
+        gains_panel = make_card(controls, f"PID Gains — {label}")
+        gains_panel.pack(fill=tk.X, pady=(0, 8))
+        gains_panel.columnconfigure(0, weight=1)
+
+        kp_ctrl = add_slider(
+            gains_panel,
+            "Kp",
+            0,
+            400,
+            default_kp,
+            0,
+            0,
+            "{:.1f}",
+            status_callback=status_callback,
+            command=on_gain_changed,
+            callbacks_suspended=callbacks_suspended,
+        )
+        ki_ctrl = add_slider(
+            gains_panel,
+            "Ki",
+            0,
+            15,
+            default_ki,
+            1,
+            0,
+            "{:.2f}",
+            status_callback=status_callback,
+            command=on_gain_changed,
+            callbacks_suspended=callbacks_suspended,
+        )
+        kd_ctrl = add_slider(
+            gains_panel,
+            "Kd",
+            0,
+            20,
+            default_kd,
+            2,
+            0,
+            "{:.1f}",
+            status_callback=status_callback,
+            command=on_gain_changed,
+            callbacks_suspended=callbacks_suspended,
+        )
+        joint_gains.append(JointGainControls(kp=kp_ctrl, ki=ki_ctrl, kd=kd_ctrl))
 
     action_panel = make_card(controls, "Controller")
     action_panel.pack(fill=tk.X)
@@ -205,9 +224,7 @@ def build_pid_tab(
 
     return PidTab(
         q_controls=q_controls,
-        kp_control=kp_control,
-        ki_control=ki_control,
-        kd_control=kd_control,
+        joint_gains=joint_gains,
         axis=axis,
         error_line=error_line,
         torque_line=torque_line,
