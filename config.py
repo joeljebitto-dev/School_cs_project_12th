@@ -57,15 +57,15 @@ MIN_WINDOW_WIDTH = 1024
 MIN_WINDOW_HEIGHT = 700
 
 UI_COLORS = {
-    "bg": "#111827",
-    "panel": "#182235",
-    "panel_alt": "#202c42",
-    "border": "#334155",
-    "text": "#e5e7eb",
-    "muted": "#94a3b8",
-    "accent": "#38bdf8",
-    "accent_dark": "#0f766e",
-    "entry_bg": "#0f172a",
-    "equation_bg": "#111827",
-    "result_bg": "#0b1220",
+    "bg": "#09090b",
+    "panel": "#18181b",
+    "panel_alt": "#27272a",
+    "border": "#3f3f46",
+    "text": "#f4f4f5",
+    "muted": "#a1a1aa",
+    "accent": "#3b82f6",
+    "accent_dark": "#2563eb",
+    "entry_bg": "#000000",
+    "equation_bg": "#09090b",
+    "result_bg": "#000000",
 }

@@ -1,5 +1,7 @@
 # 3D 3-DOF MuJoCo Kinematics and PID Demo
 
+![Robot Arm PID Motion](assets/robot_motion.gif)
+
 This project demonstrates forward kinematics, inverse kinematics, and PID
 control for a 3D robot arm. It is built for a computer project, so the code is
 kept small, direct, and easy to explain.

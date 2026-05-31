@@ -106,80 +106,92 @@ class KinematicsPidApp:
         if "clam" in style.theme_names():
             style.theme_use("clam")
 
+        font_family = "Helvetica"
+        base_font = (font_family, 11)
+        
         self.root.configure(bg=UI_COLORS["bg"])
-        self.root.option_add("*Font", ("TkDefaultFont", 10))
+        self.root.option_add("*Font", base_font)
 
         style.configure("TFrame", background=UI_COLORS["bg"])
         style.configure("App.TFrame", background=UI_COLORS["bg"])
         style.configure("Card.TFrame", background=UI_COLORS["panel"])
-        style.configure("TLabel", background=UI_COLORS["bg"], foreground=UI_COLORS["text"])
+        style.configure("TLabel", background=UI_COLORS["bg"], foreground=UI_COLORS["text"], font=base_font)
         style.configure(
             "Title.TLabel",
             background=UI_COLORS["bg"],
             foreground=UI_COLORS["text"],
-            font=("TkDefaultFont", 16, "bold"),
+            font=(font_family, 22, "bold"),
         )
         style.configure(
             "Subtitle.TLabel",
             background=UI_COLORS["bg"],
             foreground=UI_COLORS["muted"],
+            font=(font_family, 11),
         )
         style.configure(
             "Muted.TLabel",
             background=UI_COLORS["panel"],
             foreground=UI_COLORS["muted"],
+            font=(font_family, 10),
         )
         style.configure(
             "Card.TLabel",
             background=UI_COLORS["panel"],
             foreground=UI_COLORS["text"],
+            font=base_font,
         )
         style.configure(
             "Status.TLabel",
-            padding=(12, 8),
+            padding=(16, 12),
             background=UI_COLORS["panel"],
             foreground=UI_COLORS["muted"],
+            font=(font_family, 10),
         )
         style.configure(
             "TNotebook",
             background=UI_COLORS["bg"],
             borderwidth=0,
-            tabmargins=(0, 4, 0, 0),
+            tabmargins=(0, 8, 0, 0),
         )
         style.configure(
             "TNotebook.Tab",
             background=UI_COLORS["panel_alt"],
             foreground=UI_COLORS["muted"],
-            padding=(16, 9),
+            padding=(20, 10),
             borderwidth=0,
+            font=(font_family, 11, "bold"),
         )
         style.map(
             "TNotebook.Tab",
             background=[("selected", UI_COLORS["panel"])],
-            foreground=[("selected", UI_COLORS["text"])],
+            foreground=[("selected", UI_COLORS["accent"])],
         )
         style.configure(
             "Card.TLabelframe",
             background=UI_COLORS["panel"],
             foreground=UI_COLORS["text"],
             bordercolor=UI_COLORS["border"],
-            relief=tk.SOLID,
-            padding=12,
+            relief=tk.FLAT,
+            borderwidth=1,
+            padding=16,
         )
         style.configure(
             "Card.TLabelframe.Label",
             background=UI_COLORS["panel"],
-            foreground=UI_COLORS["text"],
-            font=("TkDefaultFont", 10, "bold"),
+            foreground=UI_COLORS["accent"],
+            font=(font_family, 12, "bold"),
         )
         style.configure(
             "TButton",
             background=UI_COLORS["panel_alt"],
             foreground=UI_COLORS["text"],
             bordercolor=UI_COLORS["border"],
-            focusthickness=1,
+            borderwidth=1,
+            focusthickness=0,
             focuscolor=UI_COLORS["accent"],
-            padding=(12, 6),
+            padding=(16, 8),
+            font=(font_family, 11, "bold"),
+            relief=tk.FLAT,
         )
         style.map(
             "TButton",
@@ -188,20 +200,25 @@ class KinematicsPidApp:
         )
         style.configure(
             "Accent.TButton",
-            background=UI_COLORS["accent_dark"],
-            foreground=UI_COLORS["text"],
-            padding=(12, 6),
+            background=UI_COLORS["accent"],
+            foreground="#ffffff",
+            bordercolor=UI_COLORS["accent_dark"],
+            padding=(16, 8),
+            font=(font_family, 11, "bold"),
         )
-        style.map("Accent.TButton", background=[("active", UI_COLORS["accent"])])
+        style.map("Accent.TButton", background=[("active", UI_COLORS["accent_dark"])])
         style.configure(
             "TCheckbutton",
             background=UI_COLORS["bg"],
             foreground=UI_COLORS["text"],
+            font=base_font,
+            indicatorsize=14,
         )
         style.map(
             "TCheckbutton",
             background=[("active", UI_COLORS["bg"])],
             foreground=[("active", UI_COLORS["text"])],
+            indicatorcolor=[("selected", UI_COLORS["accent"])],
         )
         style.configure(
             "Dark.TEntry",
@@ -209,11 +226,13 @@ class KinematicsPidApp:
             foreground=UI_COLORS["text"],
             insertcolor=UI_COLORS["text"],
             bordercolor=UI_COLORS["border"],
+            padding=6,
         )
         style.configure(
             "Horizontal.TScale",
             background=UI_COLORS["panel"],
             troughcolor=UI_COLORS["entry_bg"],
+            troughrelief=tk.FLAT,
         )
 
     def _build_layout(self) -> None:

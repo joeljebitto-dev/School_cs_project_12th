@@ -158,7 +158,7 @@ class ScrollableFrame(ttk.Frame):
 def make_card(parent: tk.Widget, title: str) -> ttk.LabelFrame:
     """Create a styled card-like section."""
 
-    return ttk.LabelFrame(parent, text=title, style="Card.TLabelframe", padding=14)
+    return ttk.LabelFrame(parent, text=title, style="Card.TLabelframe", padding=20)
 
 
 def make_output(parent: tk.Widget, height: int) -> scrolledtext.ScrolledText:
@@ -168,7 +168,7 @@ def make_output(parent: tk.Widget, height: int) -> scrolledtext.ScrolledText:
         parent,
         height=height,
         wrap=tk.NONE,
-        font=("TkFixedFont", 10),
+        font=("Consolas", 11),
         bg=UI_COLORS["result_bg"],
         fg=UI_COLORS["text"],
         insertbackground=UI_COLORS["text"],
@@ -176,6 +176,8 @@ def make_output(parent: tk.Widget, height: int) -> scrolledtext.ScrolledText:
         selectforeground=UI_COLORS["text"],
         relief=tk.FLAT,
         borderwidth=0,
+        padx=12,
+        pady=12,
     )
     output.configure(state=tk.DISABLED)
     return output

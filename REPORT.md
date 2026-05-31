@@ -250,14 +250,11 @@ The project includes tests for:
 
 ## 9. Screenshots
 
-Add screenshots here after running the project:
+![Robot Arm 3D View](assets/robot_arm.png)
+*Static view of the 3-DOF Robot Arm in MuJoCo.*
 
-```text
-Screenshot 1: Forward Kinematics tab with joint sliders
-Screenshot 2: Inverse Kinematics tab with target sliders and target marker
-Screenshot 3: PID Control tab with target/gain sliders and error/torque plot
-Screenshot 4: MuJoCo viewer showing the 3D arm
-```
+![Robot Arm Motion](assets/robot_motion.gif)
+*Robot arm moving towards the target using PID control.*
 
 ## 10. Conclusion
 
