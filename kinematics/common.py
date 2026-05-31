@@ -5,12 +5,6 @@ from __future__ import annotations
 import numpy as np
 
 
-def wrap_angle(angle: float) -> float:
-    """Wrap one angle to the range [-pi, pi)."""
-
-    return float((angle + np.pi) % (2.0 * np.pi) - np.pi)
-
-
 def wrap_angles(angles: np.ndarray) -> np.ndarray:
     """Wrap an array of angles to the range [-pi, pi)."""
 

@@ -111,7 +111,6 @@ class KinematicsPidApp:
         base_font = (font_family, 10)
         bold_font = (font_family, 10, "bold")
         small_font = (font_family, 9)
-        mono_font = ("Consolas", 10)
 
         self.root.configure(bg=UI_COLORS["bg"])
         self.root.option_add("*Font", base_font)
@@ -331,7 +330,6 @@ class KinematicsPidApp:
         self.fk_q_controls = forward_tab.q_controls
         self.fk_output = forward_tab.output
         self.fk_apply_row = forward_tab.apply_row
-        self.fk_apply_button = forward_tab.apply_button
         self._update_pid_mode_controls()
 
         inverse_tab = build_inverse_tab(

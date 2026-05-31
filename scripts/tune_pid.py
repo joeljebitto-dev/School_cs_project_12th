@@ -12,7 +12,6 @@ from __future__ import annotations
 import math
 import sys
 from pathlib import Path
-import time
 
 import numpy as np
 
@@ -82,7 +81,6 @@ def grid_search(kp_range, ki_range, kd_range, target_rad, inertia, damping, grav
     best = (float("inf"), None)
     total = len(kp_range) * len(ki_range) * len(kd_range)
     seen = 0
-    start = time.time()
     for kp in kp_range:
         for ki in ki_range:
             for kd in kd_range:

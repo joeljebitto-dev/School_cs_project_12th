@@ -75,7 +75,5 @@ UI_COLORS = {
     "equation_bg": "#1e1e1e",
     "result_bg": "#1a1a1a",
     # Extra semantic tokens for Tailwind-style states
-    "success": "#22c55e",
-    "danger": "#ef4444",
     "hover": "#333333",
 }
