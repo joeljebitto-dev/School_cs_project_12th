@@ -8,7 +8,7 @@ import venv
 from pathlib import Path
 
 
-PROJECT_DIR = Path(__file__).resolve().parent
+PROJECT_DIR = Path(__file__).resolve().parent.parent
 VENV_DIR = PROJECT_DIR / ".venv"
 REQUIREMENTS_FILE = PROJECT_DIR / "requirements.txt"
 
@@ -59,7 +59,7 @@ def main() -> int:
     python_path = venv_python_path()
     if not python_path.exists():
         print("Could not find the Python executable inside .venv.")
-        print("Delete .venv and run ./setup.sh again.")
+        print("Delete .venv and run ./scripts/setup.sh again.")
         return 1
 
     run_command([str(python_path), "-m", "pip", "install", "--upgrade", "pip"])
@@ -72,11 +72,11 @@ def main() -> int:
         print("Tkinter could not be imported.")
         print("On Ubuntu, install it with:")
         print("  sudo apt install python3-tk")
-        print("Then run ./setup.sh again if needed.")
+        print("Then run ./scripts/setup.sh again if needed.")
 
     print()
     print("Setup complete. Start the app with:")
-    print("  ./run.sh")
+    print("  ./scripts/run.sh")
     return 0
 
 

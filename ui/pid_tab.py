@@ -66,7 +66,7 @@ def build_pid_tab(
     controls.grid(row=0, column=0, sticky=tk.NSEW, padx=(0, 12))
 
     target_panel = make_card(controls, "Target Angles")
-    target_panel.pack(fill=tk.X, pady=(0, 12))
+    target_panel.pack(fill=tk.X, pady=(0, 8))
     target_panel.columnconfigure(0, weight=1)
     q_controls = [
         add_slider(
@@ -189,7 +189,7 @@ def build_pid_tab(
     ttk.Label(
         live_panel,
         textvariable=live_values_var,
-        font=("TkFixedFont", 10),
+        font=("Consolas", 10),
         style="Card.TLabel",
         justify=tk.LEFT,
         anchor=tk.W,
@@ -211,7 +211,7 @@ def build_pid_tab(
     for spine in axis.spines.values():
         spine.set_color(UI_COLORS["border"])
     (error_line,) = axis.plot([], [], label="joint error norm", color=UI_COLORS["accent"])
-    (torque_line,) = axis.plot([], [], label="torque norm", color="#f59e0b")
+    (torque_line,) = axis.plot([], [], label="torque norm", color=UI_COLORS["accent_secondary"])
     legend = axis.legend(loc="upper right")
     legend.get_frame().set_facecolor(UI_COLORS["panel"])
     legend.get_frame().set_edgecolor(UI_COLORS["border"])

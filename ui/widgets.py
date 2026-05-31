@@ -158,26 +158,26 @@ class ScrollableFrame(ttk.Frame):
 def make_card(parent: tk.Widget, title: str) -> ttk.LabelFrame:
     """Create a styled card-like section."""
 
-    return ttk.LabelFrame(parent, text=title, style="Card.TLabelframe", padding=20)
+    return ttk.LabelFrame(parent, text=title, style="Card.TLabelframe", padding=14)
 
 
 def make_output(parent: tk.Widget, height: int) -> scrolledtext.ScrolledText:
-    """Create a dark read-only text panel."""
+    """Create a dark read-only text panel styled like a VS Code terminal."""
 
     output = scrolledtext.ScrolledText(
         parent,
         height=height,
         wrap=tk.NONE,
-        font=("Consolas", 11),
+        font=("Consolas", 10),
         bg=UI_COLORS["result_bg"],
         fg=UI_COLORS["text"],
         insertbackground=UI_COLORS["text"],
         selectbackground=UI_COLORS["accent_dark"],
-        selectforeground=UI_COLORS["text"],
+        selectforeground="#ffffff",
         relief=tk.FLAT,
         borderwidth=0,
-        padx=12,
-        pady=12,
+        padx=10,
+        pady=8,
     )
     output.configure(state=tk.DISABLED)
     return output
@@ -226,7 +226,7 @@ def add_slider(
     """Create a labeled slider with a synchronized numeric entry box."""
 
     frame = ttk.Frame(parent, style="Card.TFrame")
-    frame.grid(row=row, column=column, sticky=tk.EW, pady=(0, 12))
+    frame.grid(row=row, column=column, sticky=tk.EW, pady=(0, 8))
     frame.columnconfigure(0, weight=1)
 
     header = ttk.Frame(frame, style="Card.TFrame")
@@ -276,11 +276,11 @@ def add_slider(
         to=maximum,
         orient=tk.HORIZONTAL,
         variable=variable,
-    ).grid(row=1, column=0, sticky=tk.EW, pady=(4, 0))
+    ).grid(row=1, column=0, sticky=tk.EW, pady=(2, 0))
 
     ttk.Label(
         frame,
-        text=f"{minimum:g} to {maximum:g}",
+        text=f"{minimum:g} – {maximum:g}",
         style="Muted.TLabel",
-    ).grid(row=2, column=0, sticky=tk.W, pady=(2, 0))
+    ).grid(row=2, column=0, sticky=tk.W, pady=(1, 0))
     return control

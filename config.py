@@ -57,15 +57,25 @@ MIN_WINDOW_WIDTH = 1024
 MIN_WINDOW_HEIGHT = 700
 
 UI_COLORS = {
-    "bg": "#09090b",
-    "panel": "#18181b",
-    "panel_alt": "#27272a",
-    "border": "#3f3f46",
-    "text": "#f4f4f5",
-    "muted": "#a1a1aa",
+    # VS Code Dark+ base
+    "bg": "#1e1e1e",
+    "panel": "#252526",
+    "panel_alt": "#2d2d2d",
+    "border": "#3c3c3c",
+    # Text (VS Code token colors)
+    "text": "#d4d4d4",
+    "muted": "#858585",
+    # Tailwind blue-500 / blue-600
     "accent": "#3b82f6",
     "accent_dark": "#2563eb",
-    "entry_bg": "#000000",
-    "equation_bg": "#09090b",
-    "result_bg": "#000000",
+    # Tailwind amber-400 (secondary accent for plots/highlights)
+    "accent_secondary": "#fbbf24",
+    # Input fields
+    "entry_bg": "#1a1a1a",
+    "equation_bg": "#1e1e1e",
+    "result_bg": "#1a1a1a",
+    # Extra semantic tokens for Tailwind-style states
+    "success": "#22c55e",
+    "danger": "#ef4444",
+    "hover": "#333333",
 }

@@ -7,7 +7,7 @@ import sys
 from pathlib import Path
 
 
-PROJECT_DIR = Path(__file__).resolve().parent
+PROJECT_DIR = Path(__file__).resolve().parent.parent
 VENV_DIR = PROJECT_DIR / ".venv"
 MAIN_FILE = PROJECT_DIR / "main.py"
 
@@ -31,7 +31,7 @@ def main() -> int:
     python_path = find_venv_python()
     if python_path is None:
         print("Could not find a virtual environment Python in .venv.")
-        print("Run ./setup.sh first.")
+        print("Run ./scripts/setup.sh first.")
         return 1
 
     if not MAIN_FILE.exists():

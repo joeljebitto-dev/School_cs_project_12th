@@ -40,7 +40,7 @@ def build_inverse_tab(
     parent.rowconfigure(1, weight=1)
 
     target_panel = make_card(parent, "Cartesian Target")
-    target_panel.grid(row=0, column=0, sticky=tk.NSEW, padx=(0, 12), pady=(0, 12))
+    target_panel.grid(row=0, column=0, sticky=tk.NSEW, padx=(0, 10), pady=(0, 8))
     target_panel.columnconfigure(0, weight=1)
 
     x_control = add_slider(
@@ -95,7 +95,7 @@ def build_inverse_tab(
     ).pack(side=tk.LEFT, padx=(8, 0))
 
     math_panel = make_card(parent, "Solver Math")
-    math_panel.grid(row=1, column=0, sticky=tk.NSEW, padx=(0, 12))
+    math_panel.grid(row=1, column=0, sticky=tk.NSEW, padx=(0, 10))
     add_latex_equation_box(
         math_panel,
         equations=[

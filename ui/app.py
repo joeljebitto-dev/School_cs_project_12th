@@ -106,33 +106,45 @@ class KinematicsPidApp:
         if "clam" in style.theme_names():
             style.theme_use("clam")
 
-        font_family = "Helvetica"
-        base_font = (font_family, 11)
-        
+        # Font stack: prefer Segoe UI (VS Code default), fallback to system sans
+        font_family = "Segoe UI"
+        base_font = (font_family, 10)
+        bold_font = (font_family, 10, "bold")
+        small_font = (font_family, 9)
+        mono_font = ("Consolas", 10)
+
         self.root.configure(bg=UI_COLORS["bg"])
         self.root.option_add("*Font", base_font)
 
+        # --- Frames ---
         style.configure("TFrame", background=UI_COLORS["bg"])
         style.configure("App.TFrame", background=UI_COLORS["bg"])
         style.configure("Card.TFrame", background=UI_COLORS["panel"])
-        style.configure("TLabel", background=UI_COLORS["bg"], foreground=UI_COLORS["text"], font=base_font)
+
+        # --- Labels ---
+        style.configure(
+            "TLabel",
+            background=UI_COLORS["bg"],
+            foreground=UI_COLORS["text"],
+            font=base_font,
+        )
         style.configure(
             "Title.TLabel",
             background=UI_COLORS["bg"],
-            foreground=UI_COLORS["text"],
-            font=(font_family, 22, "bold"),
+            foreground="#ffffff",
+            font=(font_family, 18, "bold"),
         )
         style.configure(
             "Subtitle.TLabel",
             background=UI_COLORS["bg"],
             foreground=UI_COLORS["muted"],
-            font=(font_family, 11),
+            font=small_font,
         )
         style.configure(
             "Muted.TLabel",
             background=UI_COLORS["panel"],
             foreground=UI_COLORS["muted"],
-            font=(font_family, 10),
+            font=small_font,
         )
         style.configure(
             "Card.TLabel",
@@ -142,30 +154,34 @@ class KinematicsPidApp:
         )
         style.configure(
             "Status.TLabel",
-            padding=(16, 12),
-            background=UI_COLORS["panel"],
+            padding=(12, 6),
+            background=UI_COLORS["panel_alt"],
             foreground=UI_COLORS["muted"],
-            font=(font_family, 10),
+            font=small_font,
         )
+
+        # --- Notebook (tabs) ---
         style.configure(
             "TNotebook",
             background=UI_COLORS["bg"],
             borderwidth=0,
-            tabmargins=(0, 8, 0, 0),
+            tabmargins=(0, 0, 0, 0),
         )
         style.configure(
             "TNotebook.Tab",
             background=UI_COLORS["panel_alt"],
             foreground=UI_COLORS["muted"],
-            padding=(20, 10),
+            padding=(16, 8),
             borderwidth=0,
-            font=(font_family, 11, "bold"),
+            font=bold_font,
         )
         style.map(
             "TNotebook.Tab",
             background=[("selected", UI_COLORS["panel"])],
-            foreground=[("selected", UI_COLORS["accent"])],
+            foreground=[("selected", "#ffffff")],
         )
+
+        # --- Cards (LabelFrames) ---
         style.configure(
             "Card.TLabelframe",
             background=UI_COLORS["panel"],
@@ -173,14 +189,16 @@ class KinematicsPidApp:
             bordercolor=UI_COLORS["border"],
             relief=tk.FLAT,
             borderwidth=1,
-            padding=16,
+            padding=14,
         )
         style.configure(
             "Card.TLabelframe.Label",
             background=UI_COLORS["panel"],
             foreground=UI_COLORS["accent"],
-            font=(font_family, 12, "bold"),
+            font=bold_font,
         )
+
+        # --- Buttons (Tailwind-style: flat, padded, bold) ---
         style.configure(
             "TButton",
             background=UI_COLORS["panel_alt"],
@@ -189,13 +207,13 @@ class KinematicsPidApp:
             borderwidth=1,
             focusthickness=0,
             focuscolor=UI_COLORS["accent"],
-            padding=(16, 8),
-            font=(font_family, 11, "bold"),
+            padding=(14, 6),
+            font=bold_font,
             relief=tk.FLAT,
         )
         style.map(
             "TButton",
-            background=[("active", UI_COLORS["border"])],
+            background=[("active", UI_COLORS["hover"]), ("pressed", UI_COLORS["border"])],
             foreground=[("disabled", UI_COLORS["muted"])],
         )
         style.configure(
@@ -203,16 +221,22 @@ class KinematicsPidApp:
             background=UI_COLORS["accent"],
             foreground="#ffffff",
             bordercolor=UI_COLORS["accent_dark"],
-            padding=(16, 8),
-            font=(font_family, 11, "bold"),
+            borderwidth=0,
+            padding=(14, 6),
+            font=bold_font,
         )
-        style.map("Accent.TButton", background=[("active", UI_COLORS["accent_dark"])])
+        style.map(
+            "Accent.TButton",
+            background=[("active", UI_COLORS["accent_dark"]), ("pressed", "#1d4ed8")],
+        )
+
+        # --- Checkbutton ---
         style.configure(
             "TCheckbutton",
             background=UI_COLORS["bg"],
             foreground=UI_COLORS["text"],
             font=base_font,
-            indicatorsize=14,
+            indicatorsize=12,
         )
         style.map(
             "TCheckbutton",
@@ -220,23 +244,42 @@ class KinematicsPidApp:
             foreground=[("active", UI_COLORS["text"])],
             indicatorcolor=[("selected", UI_COLORS["accent"])],
         )
+
+        # --- Entry ---
         style.configure(
             "Dark.TEntry",
             fieldbackground=UI_COLORS["entry_bg"],
             foreground=UI_COLORS["text"],
             insertcolor=UI_COLORS["text"],
             bordercolor=UI_COLORS["border"],
-            padding=6,
+            padding=4,
         )
+
+        # --- Scale (slider) ---
         style.configure(
             "Horizontal.TScale",
             background=UI_COLORS["panel"],
             troughcolor=UI_COLORS["entry_bg"],
             troughrelief=tk.FLAT,
+            sliderthickness=14,
+        )
+
+        # --- Scrollbar ---
+        style.configure(
+            "Vertical.TScrollbar",
+            background=UI_COLORS["panel_alt"],
+            troughcolor=UI_COLORS["bg"],
+            bordercolor=UI_COLORS["bg"],
+            arrowcolor=UI_COLORS["muted"],
+            relief=tk.FLAT,
+        )
+        style.map(
+            "Vertical.TScrollbar",
+            background=[("active", UI_COLORS["border"])],
         )
 
     def _build_layout(self) -> None:
-        top_bar = ttk.Frame(self.root, padding=(18, 14, 18, 8), style="App.TFrame")
+        top_bar = ttk.Frame(self.root, padding=(16, 10, 16, 6), style="App.TFrame")
         top_bar.pack(side=tk.TOP, fill=tk.X)
 
         title_area = ttk.Frame(top_bar, style="App.TFrame")
@@ -246,36 +289,36 @@ class KinematicsPidApp:
         )
         ttk.Label(
             title_area,
-            text="Forward kinematics, Cartesian inverse kinematics, and joint PID control",
+            text="Forward kinematics · Inverse kinematics · PID control",
             style="Subtitle.TLabel",
-        ).pack(anchor=tk.W, pady=(2, 0))
+        ).pack(anchor=tk.W, pady=(1, 0))
 
         ttk.Button(
             top_bar,
             text="Open MuJoCo Viewer",
             style="Accent.TButton",
             command=self.open_mujoco_viewer,
-        ).pack(side=tk.RIGHT, padx=(8, 0))
+        ).pack(side=tk.RIGHT, padx=(6, 0))
         ttk.Button(top_bar, text="Reset Robot", command=self.reset_simulation).pack(
             side=tk.RIGHT,
-            padx=(8, 0),
+            padx=(6, 0),
         )
         ttk.Checkbutton(
             top_bar,
             text="Use PID Motion",
             variable=self.pid_motion_enabled_var,
             command=self._on_pid_motion_toggled,
-        ).pack(side=tk.RIGHT, padx=(8, 0))
+        ).pack(side=tk.RIGHT, padx=(6, 0))
 
         notebook = ttk.Notebook(self.root)
-        notebook.pack(side=tk.TOP, fill=tk.BOTH, expand=True, padx=18, pady=(0, 10))
+        notebook.pack(side=tk.TOP, fill=tk.BOTH, expand=True, padx=16, pady=(0, 6))
 
         self.fk_scroll = ScrollableFrame(notebook)
         self.ik_scroll = ScrollableFrame(notebook)
         self.pid_scroll = ScrollableFrame(notebook)
-        notebook.add(self.fk_scroll, text="Forward Kinematics")
-        notebook.add(self.ik_scroll, text="Inverse Kinematics")
-        notebook.add(self.pid_scroll, text="PID Control")
+        notebook.add(self.fk_scroll, text="  Forward Kinematics  ")
+        notebook.add(self.ik_scroll, text="  Inverse Kinematics  ")
+        notebook.add(self.pid_scroll, text="  PID Control  ")
 
         forward_tab = build_forward_tab(
             self.fk_scroll.content,
@@ -325,7 +368,7 @@ class KinematicsPidApp:
         self.torque_line = pid_tab.torque_line
         self.pid_canvas = pid_tab.canvas
 
-        status_bar = ttk.Frame(self.root, padding=(18, 0, 18, 14), style="App.TFrame")
+        status_bar = ttk.Frame(self.root, padding=(16, 0, 16, 8), style="App.TFrame")
         status_bar.pack(side=tk.BOTTOM, fill=tk.X)
         ttk.Label(
             status_bar,

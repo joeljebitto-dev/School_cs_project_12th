@@ -28,13 +28,13 @@ sudo apt install python3-tk
 Set up the project:
 
 ```bash
-./setup.sh
+./scripts/setup.sh
 ```
 
 Run the project:
 
 ```bash
-./run.sh
+./scripts/run.sh
 ```
 
 Run tests:
@@ -55,8 +55,8 @@ python3 -m venv .venv
 
 ```text
 main.py                    starts the app
-setup.sh                   creates .venv and installs dependencies
-run.sh                     starts the app from .venv
+scripts/setup.sh           creates .venv and installs dependencies
+scripts/run.sh             starts the app from .venv
 config.py                  link lengths, limits, PID defaults, and UI constants
 ui/app.py                  main Tkinter coordinator and callbacks
 ui/widgets.py              reusable dark UI widgets and equation panels

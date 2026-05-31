@@ -39,7 +39,7 @@ def build_forward_tab(
     parent.rowconfigure(1, weight=1)
 
     input_panel = make_card(parent, "Joint Angles")
-    input_panel.grid(row=0, column=0, sticky=tk.NSEW, padx=(0, 12), pady=(0, 12))
+    input_panel.grid(row=0, column=0, sticky=tk.NSEW, padx=(0, 10), pady=(0, 8))
     input_panel.columnconfigure(0, weight=1)
 
     q_controls = [
@@ -95,7 +95,7 @@ def build_forward_tab(
     apply_button.pack(side=tk.LEFT)
 
     math_panel = make_card(parent, "Core Math")
-    math_panel.grid(row=1, column=0, sticky=tk.NSEW, padx=(0, 12))
+    math_panel.grid(row=1, column=0, sticky=tk.NSEW, padx=(0, 10))
     add_latex_equation_box(
         math_panel,
         equations=[
