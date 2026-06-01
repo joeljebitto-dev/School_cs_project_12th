@@ -51,26 +51,6 @@ python3 -m venv .venv
 .venv/bin/python main.py
 ```
 
-## Project Structure
-
-```text
-main.py                    starts the app
-scripts/setup.sh           creates .venv and installs dependencies
-scripts/run.sh             starts the app from .venv
-config.py                  link lengths, limits, PID defaults, and UI constants
-ui/app.py                  main Tkinter coordinator and callbacks
-ui/widgets.py              reusable dark UI widgets and equation panels
-ui/forward_tab.py          Forward Kinematics tab layout
-ui/inverse_tab.py          Inverse Kinematics tab layout
-ui/pid_tab.py              PID Control tab layout and live plot
-kinematics/forward.py      forward kinematics, robot points, and Jacobian
-kinematics/inverse.py      inverse kinematics and safety checks
-control/pid.py             joint-space PID controller and plot history
-simulation/mujoco_sim.py   MuJoCo XML model, viewer, reset, and stepping logic
-tests/                     tests for math, controller, UI helpers, and MuJoCo
-REPORT.md                  project explanation and math derivation
-```
-
 ## How To Use The App
 
 1. Click `Open MuJoCo Viewer` to show the 3D robot.
