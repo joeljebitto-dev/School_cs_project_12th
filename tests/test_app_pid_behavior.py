@@ -39,8 +39,20 @@ class FakeGridWidget:
         self.visible = False
 
 
+class FakeSimulation:
+    def current_joint_angles(self):
+        return np.zeros(3)
+
+    def current_motor_torques(self):
+        return np.zeros(3)
+
+    def gravity_is_enabled(self):
+        return False
+
+
 def make_app_without_tk():
     app = KinematicsPidApp.__new__(KinematicsPidApp)
+    app.simulation = FakeSimulation()
     app.pid_controller = PIDController(kp=35.0, ki=0.0, kd=3.0)
     app.pid_target_angles = np.radians(DEFAULT_PID_TARGET_DEGREES)
     app.last_safe_pid_target_angles = app.pid_target_angles.copy()
@@ -51,6 +63,7 @@ def make_app_without_tk():
     app.pid_run_button_text = FakeVariable("Run PID")
     app.pid_status_var = FakeVariable("")
     app.status_var = FakeVariable("")
+    app.pid_live_values_var = FakeVariable("")
 
     app.pid_q_controls = [
         FakeControl(DEFAULT_PID_TARGET_DEGREES[0]),
@@ -69,7 +82,6 @@ def make_app_without_tk():
         ),
     ]
     app.fk_apply_row = FakeGridWidget()
-    app._update_pid_live_values = lambda: None
     return app
 
 
